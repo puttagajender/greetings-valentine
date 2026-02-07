@@ -3,26 +3,43 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Greeting</title>
+    <title>Valentine Greeting</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="card">
     <h1 id="greeting">Hi 👋</h1>
 
-    <p class="message">
-        Will you be my Valentine? 💖
-    </p>
+    <p id="question" class="message">Will you be my Valentine? 💖</p>
 
-    <div class="buttons">
+    <div class="buttons" id="buttonsBox">
         <button id="yesBtn">Yes 💘</button>
         <button id="noBtn">No 💔</button>
     </div>
 
-    <p class="footer">– Sent with ❤️</p>
+    <!-- Hidden surprise section (shows after YES) -->
+    <div id="surprise" class="hidden">
+        <img id="pic" src="assets/photo.jpg" alt="Valentine pic" />
+        <p class="message" id="interestTitle">What are you interested in this Valentine’s Day? 😄</p>
+
+        <div class="choices" id="choices">
+            <button class="choice" data-choice="Vacation">🏖️ Vacation</button>
+            <button class="choice" data-choice="Shopping">🛍️ Shopping</button>
+            <button class="choice" data-choice="Movie">🎬 Movie</button>
+            <button class="choice" data-choice="Candle light dinner">🕯️ Candle light dinner</button>
+        </div>
+
+        <p id="result" class="result"></p>
+    </div>
+
+    <p class="footer" id="footer">– Sent with ❤️</p>
+
+    <!-- Audio (plays on YES click) -->
+    <audio id="song" preload="auto">
+        <source src="assets/music.mp3" type="audio/mpeg" />
+    </audio>
 </div>
 
 <script src="script.js"></script>
-<link rel="stylesheet" href="style.css">
 </body>
 </html>
