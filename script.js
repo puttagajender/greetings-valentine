@@ -1,83 +1,106 @@
-// Personalize greeting via URL: ?name=Gajender&from=Someone
+// ---------- 1) URL params ----------
 const params = new URLSearchParams(window.location.search);
-const name = params.get("name");
-const from = params.get("from");
+const receiverName = params.get("name") || "";
+const senderName = params.get("from") || "";
 
+// ---------- 2) Elements ----------
 const greetingEl = document.getElementById("greeting");
 const footerEl = document.getElementById("footer");
+const questionEl = document.getElementById("question");
 
-if (name) greetingEl.textContent = `Hi ${name} 👋`;
-if (from) footerEl.textContent = `– Sent with ❤️ by ${from}`;
-
-const noBtn = document.getElementById("noBtn");
-const yesBtn = document.getElementById("yesBtn");
 const buttonsBox = document.getElementById("buttonsBox");
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
+
 const surprise = document.getElementById("surprise");
-const song = document.getElementById("song");
-const question = document.getElementById("question");
+const choices = document.getElementById("choices");
 const result = document.getElementById("result");
 
-// Move "No" inside the buttons area (works on mobile)
+const song = document.getElementById("song");
+
+// ---------- 3) Set greeting/footer ----------
+if (receiverName) greetingEl.textContent = `Hi ${receiverName} 👋`;
+if (senderName) footerEl.textContent = `– Sent with ❤️ by ${senderName}`;
+
+// ---------- 4) NO button run-away (works on touch + mouse) ----------
 function moveNoButton() {
+  // Move inside the buttonsBox area only (safe for mobile)
   const box = buttonsBox.getBoundingClientRect();
   const btn = noBtn.getBoundingClientRect();
 
   const padding = 6;
-  const maxX = box.width - btn.width - padding;
-  const maxY = box.height - btn.height - padding;
+  const maxX = Math.max(0, box.width - btn.width - padding);
+  const maxY = Math.max(0, box.height - btn.height - padding);
 
-  const x = padding + Math.random() * Math.max(0, maxX);
-  const y = padding + Math.random() * Math.max(0, maxY);
+  const x = padding + Math.random() * maxX;
+  const y = padding + Math.random() * maxY;
 
   noBtn.style.left = `${x}px`;
   noBtn.style.top = `${y}px`;
 }
 
-// Desktop hover
 noBtn.addEventListener("mouseenter", moveNoButton);
 
-// Mobile touch + fallback click
-noBtn.addEventListener("touchstart", (e) => {
-  e.preventDefault();
-  moveNoButton();
-}, { passive: false });
+noBtn.addEventListener(
+  "touchstart",
+  (e) => {
+    e.preventDefault();
+    moveNoButton();
+  },
+  { passive: false }
+);
 
 noBtn.addEventListener("click", (e) => {
   e.preventDefault();
   moveNoButton();
 });
 
-// YES click: show surprise + play audio
-yesBtn.addEventListener("click", async () => {
-  question.textContent = "Yayyy!! 🥰💖";
-  buttonsBox.style.display = "none";
-  surprise.classList.remove("hidden");
+// initial position
+moveNoButton();
 
-  // Audio can play because it’s initiated by a user click
+// ---------- 5) YES click: show surprise + play audio ----------
+yesBtn.addEventListener("click", async () => {
+  questionEl.textContent = "Yayyy!! 🥰💖";
+  buttonsBox.style.display = "none";
+  surprise.style.display = "block";
+
   try {
     song.currentTime = 0;
     await song.play();
   } catch (err) {
-    // Some browsers still block if device is in silent mode etc.
-    result.textContent = "🔊 Tap once more if audio didn’t start (mobile sometimes blocks sound).";
+    // Some phones block sound if silent mode etc.
+    result.textContent = "🔊 If audio didn’t start, tap the screen once and try again 🙂";
   }
 });
+// Put funReplies OUTSIDE the event listener
+const funReplies = {
+  Movie:
+    "\uD83C\uDFD6\uFE0F A vacation sounds amazing! I would love a little getaway together - chocolates would make it even sweeter \uD83C\uDF6B",
 
-// Handle interest selection
-document.getElementById("choices").addEventListener("click", (e) => {
+  CoffeeDate:
+    "\uD83D\uDED9\uFE0F Shopping sounds fun! A small surprise gift or teddy would be really cute \uD83E\uDDF8",
+
+  IceCream:
+    "\uD83C\uDFAC A movie date feels perfect - cozy vibes, popcorn and maybe some chocolate \uD83C\uDF7F \uD83C\uDF6B",
+
+  EveningWalk:
+    "\uD83D\uDD6F\uFE0F A candle light dinner sounds so romantic - flowers and soft moments would be lovely \uD83C\uDF39"
+};
+
+console.log("TEST_MESSAGE:", funReplies.Movie);
+
+
+
+// ONLY ONE click handler
+choices.addEventListener("click", (e) => {
   const btn = e.target.closest(".choice");
   if (!btn) return;
 
   const choice = btn.dataset.choice;
-  const funReplies = {
-    "Vacation": "🏖️ Vacation it is! Pack your bags… I’ll bring the snacks 😄",
-    "Shopping": "🛍️ Shopping? Okay, but I’m the cart manager 😌",
-    "Movie": "🎬 Movie date locked! Popcorn is non-negotiable 🍿",
-    "Candle light dinner": "🕯️ Candle light dinner? Very classy. I’ll try not to spill anything 😅"
-  };
+  const message = funReplies[choice] || "Happy Valentine's Day!";
 
-  result.textContent = funReplies[choice] || `Nice! ${choice} 😄`;
+const url = `https://wa.me/918688796356?text=${encodeURIComponent(message)}`;
+window.location.href = url;
+
 });
 
-// Initial position
-moveNoButton();
