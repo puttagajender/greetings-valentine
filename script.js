@@ -1,49 +1,46 @@
-// No button escape logic
-const noBtn = document.getElementById("noBtn");
 
-// Name from URL
-
+const name = 'sumana sri';
+if (name) document.getElementById("greeting").textContent = `Hi ${name} 👋`;
 
 const noBtn = document.getElementById("noBtn");
 const yesBtn = document.getElementById("yesBtn");
-const card = document.querySelector(".card");
+const buttonsBox = document.querySelector(".buttons");
 
-// Move "No" button to a random position INSIDE the card
 function moveNoButton() {
-  const cardRect = card.getBoundingClientRect();
-  const btnRect = noBtn.getBoundingClientRect();
+  const box = buttonsBox.getBoundingClientRect();
+  const btn = noBtn.getBoundingClientRect();
 
-  // Keep it within the card bounds (with padding)
-  const padding = 12;
-  const maxX = cardRect.width - btnRect.width - padding;
-  const maxY = cardRect.height - btnRect.height - padding;
+  const padding = 6;
+  const maxX = box.width - btn.width - padding;
+  const maxY = box.height - btn.height - padding;
 
-  const x = padding + Math.random() * maxX;
-  const y = padding + Math.random() * maxY;
+  const x = padding + Math.random() * Math.max(0, maxX);
+  const y = padding + Math.random() * Math.max(0, maxY);
 
-  // Position absolute inside card
   noBtn.style.left = `${x}px`;
   noBtn.style.top = `${y}px`;
-  noBtn.style.transform = "translate(0,0)";
 }
 
-// Desktop hover
+// Desktop: hover
 noBtn.addEventListener("mouseenter", moveNoButton);
 
-// Touch screens: run away when finger touches it
+// Mobile + Desktop: touch/click
 noBtn.addEventListener("touchstart", (e) => {
-  e.preventDefault(); // prevents click
+  e.preventDefault();
   moveNoButton();
 }, { passive: false });
 
-// Universal: pointer events (covers touch + pen + mouse on many devices)
-noBtn.addEventListener("pointerdown", (e) => {
-  // On mobile, this triggers before click
+noBtn.addEventListener("click", (e) => {
   e.preventDefault();
   moveNoButton();
 });
 
-// Optional: run away when finger comes close on the card (mobile-friendly)
-card.addEventListener("pointermove", (e) => {
-  const btnRect = noBtn.getBoundingClientRect();
-  const dx = e.clientX - (btnRect.left + btnRect
+// Optional: when they tap anywhere in buttons area, also make it run
+buttonsBox.addEventListener("touchstart", () => moveNoButton(), { passive: true });
+
+yesBtn.addEventListener("click", () => {
+  alert("Yayyy!!! 💖🥰");
+});
+
+// initial random position
+moveNoButton();
