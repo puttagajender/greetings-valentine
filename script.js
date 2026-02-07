@@ -60,8 +60,10 @@ moveNoButton();
 
 // ---------- 5) YES click: show surprise + play audio ----------
 yesBtn.addEventListener("click", async () => {
-  questionEl.textContent = "Yayyy!! 🥰💖";
+  question.textContent = "Yayyy!! 🥰💖";
   buttonsBox.style.display = "none";
+
+  surprise.classList.remove("hidden");
   surprise.style.display = "block";
 
   try {
