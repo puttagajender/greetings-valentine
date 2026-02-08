@@ -54,23 +54,22 @@ noBtn.addEventListener("click", (e) => {
 // initial position
 moveNoButton();
 
-// ---------- 5) YES click: show surprise + play audio ----------
 yesBtn.addEventListener("click", async () => {
   questionEl.textContent = "Yayyy!! 🥰💖";
   buttonsBox.style.display = "none";
 
-  // show surprise section (image + options)
   surprise.classList.remove("hidden");
   surprise.style.display = "block";
 
-  // play audio (allowed because user clicked)
   try {
     song.currentTime = 0;
+    song.loop = true;          // ✅ LOOP ENABLED
     await song.play();
   } catch (err) {
     result.textContent = "🔊 If audio didn’t start, tap once and try again 🙂";
   }
 });
+
 
 // ---------- 6) Replies (emoji-safe via unicode escapes) ----------
 const funReplies = {
@@ -84,21 +83,24 @@ const funReplies = {
     "\uD83D\uDD6F\uFE0F Candle light dinner sounds so romantic - flowers and soft moments \uD83C\uDF39",
 };
 
-// ---------- 7) Choice click: show message + open WhatsApp ----------
 choices.addEventListener("click", (e) => {
   const btn = e.target.closest(".choice");
   if (!btn) return;
 
+  // ✅ STOP AUDIO
+  song.pause();
+  song.currentTime = 0;
+  song.loop = false;
+
   const choiceKey = btn.dataset.choice;
-  const message = funReplies[choiceKey] || "Happy Valentine's Day! ❤️";
+  const optionWithEmoji = btn.textContent.trim();
 
-  // show on page
-  result.textContent = message;
+  const message =
+    `${optionWithEmoji}\n` +
+    (funReplies[choiceKey] || "Happy Valentine's Day! ❤️");
 
-  // WhatsApp redirect (add your number below)
-  const phone = "918688796356"; // country code + number, no + sign
+  const phone = "918688796356";
   const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
-
-  // redirect (best for mobile)
   window.location.href = url;
 });
+
