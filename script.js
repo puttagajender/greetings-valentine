@@ -1,7 +1,6 @@
-// ---------- 1) URL params ----------
-const params = new URLSearchParams(window.location.search);
-const receiverName = params.get("name") || "";
-const senderName = params.get("from") || "";
+// ---------- 1) Hardcoded names ----------
+const receiverName = "Sumana Sree";
+const senderName = "Gajender";
 
 // ---------- 2) Elements ----------
 const greetingEl = document.getElementById("greeting");
@@ -19,12 +18,11 @@ const result = document.getElementById("result");
 const song = document.getElementById("song");
 
 // ---------- 3) Set greeting/footer ----------
-if (receiverName) greetingEl.textContent = `Hi ${receiverName} 👋`;
-if (senderName) footerEl.textContent = `– Sent with ❤️ by ${senderName}`;
+if (greetingEl) greetingEl.textContent = `Hi ${receiverName} 👋`;
+if (footerEl) footerEl.textContent = `– Sent with ❤️ by ${senderName}`;
 
-// ---------- 4) NO button run-away (works on touch + mouse) ----------
+// ---------- 4) NO button run-away (touch + mouse) ----------
 function moveNoButton() {
-  // Move inside the buttonsBox area only (safe for mobile)
   const box = buttonsBox.getBoundingClientRect();
   const btn = noBtn.getBoundingClientRect();
 
@@ -40,7 +38,6 @@ function moveNoButton() {
 }
 
 noBtn.addEventListener("mouseenter", moveNoButton);
-
 noBtn.addEventListener(
   "touchstart",
   (e) => {
@@ -49,7 +46,6 @@ noBtn.addEventListener(
   },
   { passive: false }
 );
-
 noBtn.addEventListener("click", (e) => {
   e.preventDefault();
   moveNoButton();
@@ -60,49 +56,49 @@ moveNoButton();
 
 // ---------- 5) YES click: show surprise + play audio ----------
 yesBtn.addEventListener("click", async () => {
-  question.textContent = "Yayyy!! 🥰💖";
+  questionEl.textContent = "Yayyy!! 🥰💖";
   buttonsBox.style.display = "none";
 
+  // show surprise section (image + options)
   surprise.classList.remove("hidden");
   surprise.style.display = "block";
 
+  // play audio (allowed because user clicked)
   try {
     song.currentTime = 0;
     await song.play();
   } catch (err) {
-    // Some phones block sound if silent mode etc.
-    result.textContent = "🔊 If audio didn’t start, tap the screen once and try again 🙂";
+    result.textContent = "🔊 If audio didn’t start, tap once and try again 🙂";
   }
 });
-// Put funReplies OUTSIDE the event listener
+
+// ---------- 6) Replies (emoji-safe via unicode escapes) ----------
 const funReplies = {
   Movie:
-    "\uD83C\uDFD6\uFE0F A vacation sounds amazing! I would love a little getaway together - chocolates would make it even sweeter \uD83C\uDF6B",
-
+    "\uD83C\uDFD6\uFE0F Vacation sounds amazing! A little getaway + chocolates would be so sweet \uD83C\uDF6B",
   CoffeeDate:
-    "\uD83D\uDED9\uFE0F Shopping sounds fun! A small surprise gift or teddy would be really cute \uD83E\uDDF8",
-
+    "\uD83D\uDED9\uFE0F Shopping sounds fun! A cute little gift or teddy would be perfect \uD83E\uDDF8",
   IceCream:
-    "\uD83C\uDFAC A movie date feels perfect - cozy vibes, popcorn and maybe some chocolate \uD83C\uDF7F \uD83C\uDF6B",
-
+    "\uD83C\uDFAC Movie date feels perfect - cozy vibes, popcorn, and chocolate \uD83C\uDF7F \uD83C\uDF6B",
   EveningWalk:
-    "\uD83D\uDD6F\uFE0F A candle light dinner sounds so romantic - flowers and soft moments would be lovely \uD83C\uDF39"
+    "\uD83D\uDD6F\uFE0F Candle light dinner sounds so romantic - flowers and soft moments \uD83C\uDF39",
 };
 
-console.log("TEST_MESSAGE:", funReplies.Movie);
-
-
-
-// ONLY ONE click handler
+// ---------- 7) Choice click: show message + open WhatsApp ----------
 choices.addEventListener("click", (e) => {
   const btn = e.target.closest(".choice");
   if (!btn) return;
 
-  const choice = btn.dataset.choice;
-  const message = funReplies[choice] || "Happy Valentine's Day!";
+  const choiceKey = btn.dataset.choice;
+  const message = funReplies[choiceKey] || "Happy Valentine's Day! ❤️";
 
-const url = `https://wa.me/918688796356?text=${encodeURIComponent(message)}`;
-window.location.href = url;
+  // show on page
+  result.textContent = message;
 
+  // WhatsApp redirect (add your number below)
+  const phone = "918688796356"; // country code + number, no + sign
+  const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+
+  // redirect (best for mobile)
+  window.location.href = url;
 });
-
